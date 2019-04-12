@@ -16,4 +16,51 @@ theme_set(theme_bw())
 
 ```{r read}
 atividade = read_projectdata()
+validos = atividade %>%
+  filter(!is.na(seguidores))
+
+glimpse(validos)
+```
+
+## (4-) Quais os partidos onde seus parlamentares possui mais menos seguidores?
+```{r}
+partidos_seg = validos %>%
+  select(seguidores, partido)
+
+glimpse(partidos_seg)
+
+partidos_seg %>%
+  ggplot(aes(x = seguidores, y = reorder(partido, seguidores))) +
+  geom_quasirandom(alpha = .3,
+                   groupOnX = TRUE) +
+  scale_x_log10() + 
+  labs(y = "Partidos",
+       x = "Seguidores")
+```
+
+
+## (4.1-) Do maior partido, qual a relação entre seguidores e engajamento para cada parlamentar?
+
+```{r}
+maior_partido = validos %>%
+  filter(partido == "PSOL") %>%
+  select(UF, seguidores, engaj_total)
+
+glimpse(maior_partido)
+
+maior_partido %>%
+  ggplot(aes(x = seguidores, y = engaj_total, color = UF)) +
+  geom_point() +
+  labs(x = "Seguidores",
+       y = "Engajamento máximo", 
+       color = "Estado")
+
+maior_partido %>%
+  ggplot(aes(x = seguidores, y = engaj_total, color = UF)) +
+  geom_point() +
+  labs(x = "Seguidores",
+       y = "Engajamento máximo", 
+       color = "Estado") + 
+  scale_x_log10() +
+  scale_y_log10()
 ```
