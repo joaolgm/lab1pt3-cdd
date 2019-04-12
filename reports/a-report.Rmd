@@ -11,6 +11,7 @@ library(tidyverse)
 library(ggbeeswarm)
 source(here::here("code/lib.R"))
 theme_set(theme_bw())
+options(scipen = 999)
 ```
 
 
@@ -21,20 +22,25 @@ validos = atividade %>%
 
 glimpse(validos)
 ```
-## (1-) Quais as UF onde seus parlamentares mais e menos tuítam tuítes próprios?
+
+## Quais as UF onde seus parlamentares mais e menos tuítam tuítes próprios?
+
 Nessa análise utilizaremos boxplots para vermos a distribuição dos tuítes próprios dos parlamentares por estado.
 O boxplot provê uma boa vizualização para o que queremos enxegar.
+
 ```{r}
 atividade %>% ggplot(aes(x = n_proprio, y = UF)) + geom_boxplot()
 ```
 
 Como podemos observar, a Bahia e Minas Gerais são os estados brasileiros onde seus parlamentares mais tuítam tuítes próprios. Essas UFs são grandes colégios eleitorais e, geralmente, o Twitter acaba por ser um meio eficaz pra se comunicar com os eleitores desses estados. Em contrapartida, temos a baixa participação dos parlamentares da Paraíba e Alagoas, empatados em último lugar entre os parlamentares que menos tuítam. UFs essas que são colégios eleitorais pequenos e da região que menos possui acesso a internet (apenas 37,2% da população). Os parlamentares devem se utilizar de outros meios para se comunicar com seus eleitores.
 
-## (2-) Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais retuítam?
+## Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais retuítam?
+
 Os cinco estados onde seus parlamentares mais tuítam tuítes próprios foram, respectivamente:
 Bahia, Minas Gerais, Rio de Janeiro, Paraná e Pernambuco.
 
 Na análise, utilizaremos a distribuição dos boxplots para observarmos a mediana de retuítes para cada estado especificado.
+
 ```{r}
 atividade %>% filter(UF == "BA" | UF == "MG" | UF == "RJ" | UF == "PR" | UF == "PE") %>% 
   ggplot(aes(x = n_retweet, y = UF)) + geom_boxplot()
@@ -42,8 +48,7 @@ atividade %>% filter(UF == "BA" | UF == "MG" | UF == "RJ" | UF == "PR" | UF == "
 
 Como podemos observar, o Rio de Janeiro é o estado dentre aqueles em que seus parlamentares mais tuítam tuítes próprios que mais retuítam, seguidos do Paraná. A ordem respectiva é a seguinte: Rio de Janeiro, Paraná, Bahia, Minas Gerais e Pernambuco.  
 
-
-##(3-) Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais geram engajamento nos seus tuítes próprios?
+## Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais geram engajamento nos seus tuítes próprios?
 ```{r}
     engajamento_proprio = validos %>%
          filter(UF == 'BH' | UF == 'MG' | UF == 'RJ' | UF == 'PR' | UF == 'PE') %>%
@@ -74,48 +79,75 @@ Como podemos observar, o Rio de Janeiro é o estado dentre aqueles em que seus p
         theme_linedraw()
         
 ```
+
 Percebemos a partir do gráfico acima, que os parlamentares que mais geram engajamento em relação aos seus próprios tweets são Marcelo Freixo, Talíra Petrone, David Miranda, Paulo Eduardo Martins dentre outros, já os parlamentares que menos geram engajamento baseado em seus tuítes próprios são Júlio Delgado, Alexandre Serfiotis e Euclydes Pettersen, dentre outros.
 
+## Quais os partidos onde seus parlamentares possui mais ou menos seguidores?
 
-## (4-) Quais os partidos onde seus parlamentares possui mais menos seguidores?
+Tenho a impressão de que os partidos com mais representantes eleitos tendem a ser os partidos que de uma maneira geral vão acumular mais seguidores.
+
+Nessa análise iremos observar o número de seguidores de cada parlamentar de cada partido para aí sim termos alguma conclusão se o número de representantes traz consigo a fama e oconhecimento na rede social.
+
 ```{r}
 partidos_seg = validos %>%
+  filter(partido != "S/Partido" & partido != "PRP" & partido != "PMN") %>%
   select(seguidores, partido)
-
+  
 glimpse(partidos_seg)
 
 partidos_seg %>%
-  ggplot(aes(x = seguidores, y = reorder(partido, seguidores))) +
-  geom_quasirandom(alpha = .3,
-                   groupOnX = TRUE) +
-  scale_x_log10() + 
-  labs(y = "Partidos",
-       x = "Seguidores")
+  ggplot(aes(x = reorder(partido, seguidores), y = seguidores)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  coord_flip() + 
+  labs(x = "Partidos",
+       y = "Seguidores")
 ```
 
+A partir da visualização criada é possível perceber que realmente, como esperávamos, partidos com grande número de representantes atuantes tem de maneira geral grande quantidade de seguidores no Twitter, porém o líder é incomum. O PSOL é o partido com mais seguidores mesmo tendo bem menos parlamentares do que o PT e o PSL, por exemplo.
 
-## (4.1-) Do maior partido, qual a relação entre seguidores e engajamento para cada parlamentar?
+## Entre os maiores partidos, qual a relação entre seguidores e engajamento para cada parlamentar?
 
 ```{r}
 maior_partido = validos %>%
-  filter(partido == "PSOL") %>%
-  select(UF, seguidores, engaj_total)
+  filter(partido == "PSOL" | partido == "PODE" | partido == "PSL") %>%
+  select(seguidores, engaj_total, partido)
 
 glimpse(maior_partido)
 
 maior_partido %>%
-  ggplot(aes(x = seguidores, y = engaj_total, color = UF)) +
-  geom_point() +
-  labs(x = "Seguidores",
-       y = "Engajamento máximo", 
-       color = "Estado")
-
-maior_partido %>%
-  ggplot(aes(x = seguidores, y = engaj_total, color = UF)) +
-  geom_point() +
-  labs(x = "Seguidores",
-       y = "Engajamento máximo", 
+  ggplot(aes(x = seguidores, y = engaj_total, color = partido)) +
+  geom_point(size = 2.5) +
+  labs(title = "Parlamentares", 
+       x = "Seguidores",
+       y = "Engajamento total", 
        color = "Estado") + 
   scale_x_log10() +
   scale_y_log10()
+```
+
+
+```{r}
+parla_psl = validos %>%
+  filter(partido == "PSL") %>%
+  filter(engaj_total > 100000 & seguidores < 1000)
+
+glimpse(parla_psl)
+
+parla_pode = validos %>%
+  filter(partido == "PODE") %>%
+  filter(engaj_total > 100000 & seguidores > 1000000)
+
+glimpse(parla_pode)
+
+ggplot() +
+  geom_point(data = parla_psl,
+             mapping = aes(x = nome_eleitoral, y = engaj_total_retweet, color = partido, size = seguidores)) +
+  geom_point(data = parla_pode,
+             mapping = aes(x = nome_eleitoral, y = engaj_total_retweet, color = partido, size = seguidores)) +
+  scale_y_log10() + 
+  labs(x = "Parlamentar",
+       y = "Engajamento total por retweet",
+       color = "Partido",
+       size = "Seguidores")
 ```
