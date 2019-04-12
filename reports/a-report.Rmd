@@ -43,6 +43,40 @@ atividade %>% filter(UF == "BA" | UF == "MG" | UF == "RJ" | UF == "PR" | UF == "
 Como podemos observar, o Rio de Janeiro é o estado dentre aqueles em que seus parlamentares mais tuítam tuítes próprios que mais retuítam, seguidos do Paraná. A ordem respectiva é a seguinte: Rio de Janeiro, Paraná, Bahia, Minas Gerais e Pernambuco.  
 
 
+##(3-) Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais geram engajamento nos seus tuítes próprios?
+```{r}
+    engajamento_proprio = validos %>%
+         filter(UF == 'BH' | UF == 'MG' | UF == 'RJ' | UF == 'PR' | UF == 'PE') %>%
+          select(nome_eleitoral, engaj_total_proprio)      
+    
+    engajamento_proprio %>%
+        arrange(-engaj_total_proprio) %>%
+        slice(0:20) %>%
+        ggplot(aes(x = reorder(nome_eleitoral, engaj_total_proprio), y = engaj_total_proprio, color = "#EF2917")) +
+        geom_point() +
+        coord_flip() +
+        scale_y_continuous(trans  = 'log2') +
+        ggtitle('Os Parlamentares que mais geram engajamento') +
+        xlab('Parlamentares') +
+        ylab('Engajamento por tweet') + 
+        theme_linedraw()
+        
+    engajamento_proprio %>%
+        arrange(engaj_total_proprio) %>%
+        slice(0:20)  %>%
+        ggplot(aes(x = reorder(nome_eleitoral, engaj_total_proprio), y = engaj_total_proprio, color = "#EF2917")) +
+        geom_point() +
+        coord_flip() +
+        scale_y_continuous(trans  = 'log2') +
+        ggtitle('Os Parlamentares que menos geram engajamento') + 
+        xlab('Parlamentares') +
+        ylab('Engajamento por tweet') + 
+        theme_linedraw()
+        
+```
+Percebemos a partir do gráfico acima, que os parlamentares que mais geram engajamento em relação aos seus próprios tweets são Marcelo Freixo, Talíra Petrone, David Miranda, Paulo Eduardo Martins dentre outros, já os parlamentares que menos geram engajamento baseado em seus tuítes próprios são Júlio Delgado, Alexandre Serfiotis e Euclydes Pettersen, dentre outros.
+
+
 ## (4-) Quais os partidos onde seus parlamentares possui mais menos seguidores?
 ```{r}
 partidos_seg = validos %>%
