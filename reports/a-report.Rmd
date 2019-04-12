@@ -21,6 +21,27 @@ validos = atividade %>%
 
 glimpse(validos)
 ```
+## (1-) Quais as UF onde seus parlamentares mais e menos tuítam tuítes próprios?
+Nessa análise utilizaremos boxplots para vermos a distribuição dos tuítes próprios dos parlamentares por estado.
+O boxplot provê uma boa vizualização para o que queremos enxegar.
+```{r}
+atividade %>% ggplot(aes(x = n_proprio, y = UF)) + geom_boxplot()
+```
+
+Como podemos observar, a Bahia e Minas Gerais são os estados brasileiros onde seus parlamentares mais tuítam tuítes próprios. Essas UFs são grandes colégios eleitorais e, geralmente, o Twitter acaba por ser um meio eficaz pra se comunicar com os eleitores desses estados. Em contrapartida, temos a baixa participação dos parlamentares da Paraíba e Alagoas, empatados em último lugar entre os parlamentares que menos tuítam. UFs essas que são colégios eleitorais pequenos e da região que menos possui acesso a internet (apenas 37,2% da população). Os parlamentares devem se utilizar de outros meios para se comunicar com seus eleitores.
+
+## (2-) Dos cinco principais estados onde seus parlamentares mais tuítam quais os parlamentares que mais retuítam?
+Os cinco estados onde seus parlamentares mais tuítam tuítes próprios foram, respectivamente:
+Bahia, Minas Gerais, Rio de Janeiro, Paraná e Pernambuco.
+
+Na análise, utilizaremos a distribuição dos boxplots para observarmos a mediana de retuítes para cada estado especificado.
+```{r}
+atividade %>% filter(UF == "BA" | UF == "MG" | UF == "RJ" | UF == "PR" | UF == "PE") %>% 
+  ggplot(aes(x = n_retweet, y = UF)) + geom_boxplot()
+```
+
+Como podemos observar, o Rio de Janeiro é o estado dentre aqueles em que seus parlamentares mais tuítam tuítes próprios que mais retuítam, seguidos do Paraná. A ordem respectiva é a seguinte: Rio de Janeiro, Paraná, Bahia, Minas Gerais e Pernambuco.  
+
 
 ## (4-) Quais os partidos onde seus parlamentares possui mais menos seguidores?
 ```{r}
