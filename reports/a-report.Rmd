@@ -86,7 +86,7 @@ Percebemos a partir do gráfico acima, que os parlamentares que mais geram engaj
 
 Tenho a impressão de que os partidos com mais representantes eleitos tendem a ser os partidos que de uma maneira geral vão acumular mais seguidores.
 
-Nessa análise iremos observar o número de seguidores de cada parlamentar de cada partido para aí sim termos alguma conclusão se o número de representantes traz consigo a fama e oconhecimento na rede social.
+Nessa análise iremos observar o número de seguidores de cada parlamentar de cada partido para aí sim termos alguma conclusão se o número de representantes traz consigo a fama e o reconhecimento na rede social.
 
 ```{r}
 partidos_seg = validos %>%
@@ -108,6 +108,10 @@ A partir da visualização criada é possível perceber que realmente, como espe
 
 ## Entre os maiores partidos, qual a relação entre seguidores e engajamento para cada parlamentar?
 
+Acredito que, entre os maiores partidos, quanto mais aumente o número de seguidores de um parlamentar maior será o seu engajamento.
+
+Nessa análise iremos observar os três maiores partidos encontrados na análise passada para analisar, comparar e procurar algum padrão entre a quantidade de seguidores e engajamento total dos parlamentares.
+
 ```{r}
 maior_partido = validos %>%
   filter(partido == "PSOL" | partido == "PODE" | partido == "PSL") %>%
@@ -126,28 +130,21 @@ maior_partido %>%
   scale_y_log10()
 ```
 
+Como esperado, realmente existe um certo padrão, com o crescimento dos seguidores do parlamentar também cresce o engajamento obtido por ele, de uma maneira geral. Entretanto há dois casos que chamam atenção, onde um parlamentar apresenta grande engajamento e pouco seguidor e outro apresenta o contrário.
 
 ```{r}
 parla_psl = validos %>%
   filter(partido == "PSL") %>%
-  filter(engaj_total > 100000 & seguidores < 1000)
-
-glimpse(parla_psl)
+  filter(engaj_total > 100000 & seguidores < 1000) %>%
+  select(casa, nome_eleitoral, partido, seguidores, engaj_total)
 
 parla_pode = validos %>%
   filter(partido == "PODE") %>%
-  filter(engaj_total > 100000 & seguidores > 1000000)
+  filter(engaj_total > 100000 & seguidores > 1000000) %>%
+  select(casa, nome_eleitoral, partido, seguidores, engaj_total)
 
+glimpse(parla_psl)
 glimpse(parla_pode)
-
-ggplot() +
-  geom_point(data = parla_psl,
-             mapping = aes(x = nome_eleitoral, y = engaj_total_retweet, color = partido, size = seguidores)) +
-  geom_point(data = parla_pode,
-             mapping = aes(x = nome_eleitoral, y = engaj_total_retweet, color = partido, size = seguidores)) +
-  scale_y_log10() + 
-  labs(x = "Parlamentar",
-       y = "Engajamento total por retweet",
-       color = "Partido",
-       size = "Seguidores")
 ```
+
+Esses parlamentares são Nereu Crispim, deputado do PSL, e Romário, senador do PODE, um com altíssimo engajamento e pouquíssimo seguidores o outro sendo o parlamentar com mais seguidores e engajamento relativamente baixo, respectivamente.
