@@ -6,6 +6,8 @@ output:
 theme: sandstone
 ---
 
+Grupo: José Ivan Silva, João Menezes, Thiago Montenegro
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(ggbeeswarm)
